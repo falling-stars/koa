@@ -1,9 +1,15 @@
 const fs = require('fs')
-const Router = require('koa-router')
-const router = new Router()
+const Index = require('koa-router')
+const router = new Index()
 
 router.get('*', async (ctx, next) => {
   ctx.type = 'html'
+  if (ctx.url === '/') {
+    ctx.body = 213
+  } else {
+    next()
+  }
+
   // if (html) {
   //   ctx.body = html
   // } else {

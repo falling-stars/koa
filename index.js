@@ -1,27 +1,20 @@
-const http = require('http')
 const https = require('https')
 const {resolve} = require('path')
 const fs = require('fs')
 const Koa = require('koa')
 const server = require('koa-static')
-const mount = require('koa-mount')
 const router = require('./router')
 const app = new Koa()
 const ssh = {
-  key: fs.readFileSync(resolve(__dirname, '../ssh/ssh.key')),
-  cert: fs.readFileSync(resolve(__dirname, '../ssh/ssh.pem'))
+  key: fs.readFileSync(resolve(__dirname, './ssh/ssh.key')),
+  cert: fs.readFileSync(resolve(__dirname, './ssh/ssh.pem'))
 }
-const proxyConfig = {preserveReqSession: true}
 
-app.use(server(resolve(__dirname, '../dist-pc'), {index: 'default', maxage: 1000 * 60 * 60 * 24 * 30, immutable: true}))
-app.use(server(resolve(__dirname, '../dist-m'), {index: 'default', maxage: 1000 * 60 * 60 * 24 * 30, immutable: true}))
+app.use(server(resolve(__dirname, './static'), {index: 'default', maxage: 1000 * 60 * 60 * 3, immutable: true}))
 app.use(router.routes()).use(router.allowedMethods())
 app.use(async (ctx, next) => {
-  if (!/^\/api.+/.test(ctx.url)) {
-    ctx.body = 43
-  } else {
-    await next()
-  }
+  ctx.type = 'html'
+  ctx.body = 'last'
 })
 
 const httpsPort = process.env.NODE_ENV === 'production' ? 443 : 4433
