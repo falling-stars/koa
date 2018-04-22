@@ -1,15 +1,12 @@
 const fs = require('fs')
-const Index = require('koa-router')
-const router = new Index()
+const Router = require('koa-router')
+const router = new Router()
+const graphQL = require('../graphql')
 
 router.get('*', async (ctx, next) => {
   ctx.type = 'html'
-  if (ctx.url === '/') {
-    ctx.body = 213
-  } else {
-    next()
-  }
-
+  const query = ctx.query
+  ctx.body = await graphQL(query.name)
   // if (html) {
   //   ctx.body = html
   // } else {
