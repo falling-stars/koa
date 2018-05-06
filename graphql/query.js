@@ -6,7 +6,7 @@ const getSingle = async sql => {
   let data = await sqlQuery(sql)
   data = data[0]
   let result = null
-  for (i in data) {
+  for (let i in data) {
     result = data[i]
   }
   return result

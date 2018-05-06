@@ -1,8 +1,16 @@
-const {GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList} = require('graphql')
+const {GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInt, GraphQLFloat, GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLUnionType} = require('graphql')
 const {getJsonObject, getJsonString, getSingle} = require('./query')
 
-const data = new GraphQLObjectType({
-  name: 'data',
+const processArgs = (args) => {
+  let sqlStr = 'where '
+  for (let i in args) {
+    sqlStr += `${i}='${args[i]}' and `
+  }
+  return sqlStr += '1=1'
+}
+
+const users = new GraphQLList(new GraphQLObjectType({
+  name: 'users',
   fields: {
     name: {
       type: GraphQLString
@@ -14,22 +22,30 @@ const data = new GraphQLObjectType({
       type: GraphQLString
     }
   }
-})
+}))
 
-const Query = new GraphQLObjectType({
-  name: 'Query',
+const Root = new GraphQLObjectType({
+  name: 'Root',
   fields: {
     user: {
       type: GraphQLString,
-      resolve: async () => await getJsonString(`select * from user`)
+      resolve: async () => await getJsonString(`select * from user where tel='15877926440'`)
     },
-    data: {
-      type: new GraphQLList(data),
+    users: {
+      type: users,
+      args: {
+        tel: {type: GraphQLString},
+        name: {type: GraphQLString}
+      },
+      resolve: async (_, args) => await getJsonObject(`select * from user ${processArgs(args)}`)
+    },
+    sing: {
+      type: GraphQLString,
       resolve: async () => await getJsonObject(`select * from user`)
     }
   }
 })
 
 module.exports = new GraphQLSchema({
-  query: Query
+  query: Root
 })
