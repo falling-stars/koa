@@ -12,9 +12,5 @@ const ssh = {
 
 app.use(koaBody())
 app.use(router.routes()).use(router.allowedMethods())
-app.use(async (ctx, next) => {
-  ctx.type = 'html'
-  ctx.body = 'last'
-})
 
 https.createServer(ssh, app.callback()).listen(8888, () => console.log(`Web Run In https://localhost:8888`))

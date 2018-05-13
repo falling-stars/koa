@@ -1,7 +1,7 @@
 const {graphql} = require('graphql')
 const schema = require('./schema')
 
-const query = queryStr => {
+module.exports = queryStr => {
   return new Promise(resolve => {
     graphql(schema, queryStr).then((response) => {
       if (response['errors']) {
@@ -13,5 +13,3 @@ const query = queryStr => {
     })
   })
 }
-
-module.exports = query

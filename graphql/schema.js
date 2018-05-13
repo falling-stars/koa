@@ -1,47 +1,38 @@
 const {GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, GraphQLInt, GraphQLFloat, GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLUnionType} = require('graphql')
-const {getJsonObject, getJsonString, getSingle} = require('./query')
+const {selectArgs, insertArgs, fetch, operation} = require('./data')
 
-const processArgs = (args) => {
-  let sqlStr = 'where '
-  for (let i in args) {
-    sqlStr += `${i}='${args[i]}' and `
-  }
-  return sqlStr += '1=1'
-}
-
-const users = new GraphQLList(new GraphQLObjectType({
-  name: 'users',
+const user = new GraphQLList(new GraphQLObjectType({
+  name: 'user',
   fields: {
-    name: {
-      type: GraphQLString
-    },
-    tel: {
-      type: GraphQLString
-    },
-    pwd: {
-      type: GraphQLString
-    }
+    email: {type: GraphQLString},
+    name: {type: GraphQLString},
+    password: {type: GraphQLString},
+    image: {type: GraphQLString}
   }
 }))
 
 const Root = new GraphQLObjectType({
   name: 'Root',
   fields: {
-    user: {
-      type: GraphQLString,
-      resolve: async () => await getJsonString(`select * from user where tel='15877926440'`)
-    },
-    users: {
-      type: users,
+    getUser: {
+      type: user,
       args: {
-        tel: {type: GraphQLString},
-        name: {type: GraphQLString}
+        email: {type: GraphQLString},
+        name: {type: GraphQLString},
+        password: {type: GraphQLString},
+        image: {type: GraphQLString}
       },
-      resolve: async (_, args) => await getJsonObject(`select * from user ${processArgs(args)}`)
+      resolve: async (_, args) => await fetch(selectArgs('user', '*', args))
     },
-    sing: {
+    registerUser: {
       type: GraphQLString,
-      resolve: async () => await getJsonObject(`select * from user`)
+      args: {
+        email: {type: GraphQLString},
+        name: {type: GraphQLString},
+        password: {type: GraphQLString},
+        image: {type: GraphQLString}
+      },
+      resolve: async (_, args) => await operation(insertArgs('user', args))
     }
   }
 })
