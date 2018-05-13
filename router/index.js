@@ -5,7 +5,6 @@ const router = new Router()
 const graphQL = require('../graphql')
 
 router.all('*', async ctx => {
-  console.log(1)
   ctx.type = 'text/plain; charset=utf-8'
   let query = ''
   if (ctx.method === 'GET') {
