@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/grajs/koa#readme",
   "dependencies": {
-    "cwebp": "^2.0.2",
     "graphql": "^0.13.2",
     "koa": "^2.5.1",
     "koa-body": "^2.5.0",
