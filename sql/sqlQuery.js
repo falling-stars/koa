@@ -2,10 +2,14 @@ const fs = require('fs')
 const {resolve} = require('path')
 const mysql = require('mysql')
 const config = JSON.parse(fs.readFileSync(resolve(__dirname, './DB.json')))
-const connection = mysql.createConnection(config)
+let connection = mysql.createConnection(config)
 connection.connect()
 connection.on('error', error => {
-  console.log('========' + error.code)
+  if (error.code === 'PROTOCOL_CONNECTION_LOST') {
+    connection = mysql.createConnection(config)
+  } else {
+    throw error
+  }
 })
 module.exports = (sql) => {
   return new Promise((resolve, reject) => {
